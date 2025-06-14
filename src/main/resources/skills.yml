@@ -1,0 +1,60 @@
+# ============================================
+# HƯỚNG DẪN TẠO KỸ NĂNG - PLUGIN SKILLMC
+# ============================================
+# Mỗi kỹ năng là một mục riêng, ví dụ 'hoacau'. Tên này không hiển thị, chỉ dùng để định danh trong file.
+#
+# command: Tên lệnh để kích hoạt kỹ năng (ví dụ: nguoi choi go /skill fireball).
+# name: Tên hiển thị của kỹ năng (dùng mã màu '&').
+# permission: Quyền (permission) cần có để dùng kỹ năng (ví dụ: skillmc.skill.fireball).
+# mana_cost: Số level kinh nghiệm bị trừ khi dùng (coi như là mana).
+# cooldown: Thời gian hồi chiêu tính bằng giây.
+#
+# effects: Danh sách các hiệu ứng xảy ra khi dùng kỹ năng.
+#   - type: Loại hiệu ứng. Các loại có sẵn:
+#       + PARTICLE, SOUND, DAMAGE, LAUNCH, POTION
+# ============================================
+
+hoacau:
+  command: "fireball"
+  name: "&c&lHỏa Cầu"
+  permission: "skillmc.skill.fireball"
+  mana_cost: 5
+  cooldown: 8
+  effects:
+    - type: "SOUND"
+      sound: "ENTITY_GHAST_SHOOT"
+      volume: 1.0
+      pitch: 1.2
+      target: "SELF"
+    - type: "PARTICLE"
+      particle: "FLAME"
+      count: 70
+      offset_x: 0.5
+      offset_y: 0.5
+      offset_z: 0.5
+      target: "TARGET"
+    - type: "DAMAGE"
+      damage: 8.0
+
+thanhkiemanhsang:
+  command: "lightblade"
+  name: "&e&lThánh Kiếm Ánh Sáng"
+  permission: "skillmc.skill.lightblade"
+  mana_cost: 10
+  cooldown: 20
+  effects:
+    - type: "SOUND"
+      sound: "ENTITY_PLAYER_ATTACK_SWEEP"
+      volume: 1.0
+      pitch: 1.5
+      target: "SELF"
+    - type: "POTION"
+      potion_type: "STRENGTH"
+      duration: 10
+      amplifier: 0
+      target: "SELF"
+    - type: "POTION"
+      potion_type: "SPEED"
+      duration: 15
+      amplifier: 1
+      target: "SELF"
