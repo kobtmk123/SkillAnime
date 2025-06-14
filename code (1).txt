@@ -1,0 +1,19 @@
+name: SkillMC
+version: '1.0'
+main: com.isekai.skillmc.SkillMC
+api-version: '1.21'
+author: YourName
+description: Plugin tạo kỹ năng tùy chỉnh cho server Anime Isekai.
+commands:
+  skillmc:
+    description: Lệnh chính của SkillMC.
+    usage: "/skillmc <help|list|reload>"
+    aliases: [smc, kynang]
+  skill:
+    description: Sử dụng một kỹ năng.
+    usage: "/skill <tên_kỹ_năng>"
+    aliases: [sk]
+permissions:
+  skillmc.admin:
+    description: "Cho phép dùng các lệnh quản trị của SkillMC (/skillmc reload)."
+    default: op
