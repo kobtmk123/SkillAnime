@@ -37,7 +37,7 @@ public class SkillManager {
                 skills.put(skillSection.getString("command").toLowerCase(), skillSection);
             }
         }
-        plugin.getLogger().info("ÄÃ£ táº£i " + skills.size() + " ká»¹ nÄng tá»« skills.yml.");
+        plugin.getLogger().info("Ä Ã£ táº£i " + skills.size() + " ká»¹ nÄƒng tá»« skills.yml.");
     }
 
     public ConfigurationSection getSkill(String command) {
@@ -49,7 +49,7 @@ public class SkillManager {
     }
 
     public void executeSkill(Player player, ConfigurationSection skill) {
-        String skillName = skill.getString("name", "Ká»¹ nÄng khÃ'ng tÃªn");
+        String skillName = skill.getString("name", "Ká»¹ nÄƒng khÃ'ng tÃªn");
 
         long cooldownTime = skill.getLong("cooldown", 0) * 1000;
         if (cooldownTime > 0) {
@@ -88,6 +88,7 @@ public class SkillManager {
         }
     }
 
+    // ===== HÀM ĐÃ ĐƯỢC SỬA LẠI HOÀN TOÀN =====
     private void executeSingleEffect(Player player, LivingEntity targetEntity, Map<?, ?> effectMap) {
         String type = (String) effectMap.get("type");
         if (type == null) return;
@@ -99,48 +100,56 @@ public class SkillManager {
         } else {
             effectLoc = player.getLocation().add(0, 1, 0);
         }
-        
+
         try {
             switch (type.toUpperCase()) {
-                case "PARTICLE":
+                case "PARTICLE": {
                     Particle particle = Particle.valueOf(((String) effectMap.get("particle")).toUpperCase());
-                    player.getWorld().spawnParticle(particle, effectLoc,
-                        (int) effectMap.getOrDefault("count", 10),
-                        (double) effectMap.getOrDefault("offset_x", 0.5),
-                        (double) effectMap.getOrDefault("offset_y", 0.5),
-                        (double) effectMap.getOrDefault("offset_z", 0.5), 0);
+                    int count = (int) (Integer) effectMap.getOrDefault("count", 10);
+                    double offsetX = (double) (Double) effectMap.getOrDefault("offset_x", 0.5);
+                    double offsetY = (double) (Double) effectMap.getOrDefault("offset_y", 0.5);
+                    double offsetZ = (double) (Double) effectMap.getOrDefault("offset_z", 0.5);
+                    double extra = (double) (Double) effectMap.getOrDefault("extra", 0.0);
+                    player.getWorld().spawnParticle(particle, effectLoc, count, offsetX, offsetY, offsetZ, extra);
                     break;
-                case "SOUND":
+                }
+                case "SOUND": {
                     Sound sound = Sound.valueOf(((String) effectMap.get("sound")).toUpperCase());
-                    player.getWorld().playSound(effectLoc, sound,
-                        (float) ((double) effectMap.getOrDefault("volume", 1.0)),
-                        (float) ((double) effectMap.getOrDefault("pitch", 1.0)));
+                    float volume = (float) (double) (Double) effectMap.getOrDefault("volume", 1.0);
+                    float pitch = (float) (double) (Double) effectMap.getOrDefault("pitch", 1.0);
+                    player.getWorld().playSound(effectLoc, sound, volume, pitch);
                     break;
-                case "DAMAGE":
+                }
+                case "DAMAGE": {
                     if (targetEntity != null) {
-                        double damage = (double) effectMap.getOrDefault("damage", 1.0);
+                        double damage = (double) (Double) effectMap.getOrDefault("damage", 1.0);
                         targetEntity.damage(damage, player);
                     }
                     break;
-                case "LAUNCH":
-                    double power = (double) effectMap.getOrDefault("power", 1.0);
+                }
+                case "LAUNCH": {
+                    double power = (double) (Double) effectMap.getOrDefault("power", 1.0);
                     LivingEntity launchTarget = targetType.equals("TARGET") && targetEntity != null ? targetEntity : player;
                     Vector direction = launchTarget.getLocation().getDirection().setY(0).normalize();
                     Vector velocity = direction.multiply(power).setY(power * 0.5);
                     launchTarget.setVelocity(velocity);
                     break;
-                case "POTION":
+                }
+                case "POTION": {
                     PotionEffectType potType = PotionEffectType.getByName(((String) effectMap.get("potion_type")).toUpperCase());
                     if (potType != null) {
-                        int duration = (int) effectMap.getOrDefault("duration", 10) * 20;
-                        int amplifier = (int) effectMap.getOrDefault("amplifier", 0);
+                        int duration = (int) (Integer) effectMap.getOrDefault("duration", 10) * 20;
+                        int amplifier = (int) (Integer) effectMap.getOrDefault("amplifier", 0);
                         LivingEntity potionTarget = targetType.equals("TARGET") && targetEntity != null ? targetEntity : player;
                         potionTarget.addPotionEffect(new PotionEffect(potType, duration, amplifier));
                     }
                     break;
+                }
             }
         } catch (Exception e) {
-            player.sendMessage(ChatColor.RED + "Lá»i cáº¥u hÃ¬nh ká»¹ nÄng: " + e.getMessage());
+            player.sendMessage(ChatColor.RED + "Lá»--i cáº¥u hÃ¬nh ká»¹ nÄƒng: " + e.getMessage());
+            // Để debug tốt hơn, bạn có thể thêm dòng này để in lỗi ra console của server
+            // e.printStackTrace();
         }
     }
 
@@ -153,8 +162,8 @@ public class SkillManager {
                     Vector toE1 = e1.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
                     Vector toE2 = e2.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
                     return Double.compare(
-                        toE1.angle(player.getEyeLocation().getDirection()),
-                        toE2.angle(player.getEyeLocation().getDirection())
+                            toE1.angle(player.getEyeLocation().getDirection()),
+                            toE2.angle(player.getEyeLocation().getDirection())
                     );
                 }).orElse(null);
     }
