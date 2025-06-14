@@ -88,7 +88,7 @@ public class SkillManager {
         }
     }
 
-    // ===== HÀM ĐÃ ĐƯỢC SỬA LẠI HOÀN TOÀN =====
+    // ===== HÀM ĐÃ ĐƯỢC SỬA LẠI THEO PHƯƠNG PHÁP MỚI AN TOÀN HƠN =====
     private void executeSingleEffect(Player player, LivingEntity targetEntity, Map<?, ?> effectMap) {
         String type = (String) effectMap.get("type");
         if (type == null) return;
@@ -105,30 +105,30 @@ public class SkillManager {
             switch (type.toUpperCase()) {
                 case "PARTICLE": {
                     Particle particle = Particle.valueOf(((String) effectMap.get("particle")).toUpperCase());
-                    int count = (int) (Integer) effectMap.getOrDefault("count", 10);
-                    double offsetX = (double) (Double) effectMap.getOrDefault("offset_x", 0.5);
-                    double offsetY = (double) (Double) effectMap.getOrDefault("offset_y", 0.5);
-                    double offsetZ = (double) (Double) effectMap.getOrDefault("offset_z", 0.5);
-                    double extra = (double) (Double) effectMap.getOrDefault("extra", 0.0);
+                    int count = getIntFromMap(effectMap, "count", 10);
+                    double offsetX = getDoubleFromMap(effectMap, "offset_x", 0.5);
+                    double offsetY = getDoubleFromMap(effectMap, "offset_y", 0.5);
+                    double offsetZ = getDoubleFromMap(effectMap, "offset_z", 0.5);
+                    double extra = getDoubleFromMap(effectMap, "extra", 0.0);
                     player.getWorld().spawnParticle(particle, effectLoc, count, offsetX, offsetY, offsetZ, extra);
                     break;
                 }
                 case "SOUND": {
                     Sound sound = Sound.valueOf(((String) effectMap.get("sound")).toUpperCase());
-                    float volume = (float) (double) (Double) effectMap.getOrDefault("volume", 1.0);
-                    float pitch = (float) (double) (Double) effectMap.getOrDefault("pitch", 1.0);
+                    float volume = (float) getDoubleFromMap(effectMap, "volume", 1.0);
+                    float pitch = (float) getDoubleFromMap(effectMap, "pitch", 1.0);
                     player.getWorld().playSound(effectLoc, sound, volume, pitch);
                     break;
                 }
                 case "DAMAGE": {
                     if (targetEntity != null) {
-                        double damage = (double) (Double) effectMap.getOrDefault("damage", 1.0);
+                        double damage = getDoubleFromMap(effectMap, "damage", 1.0);
                         targetEntity.damage(damage, player);
                     }
                     break;
                 }
                 case "LAUNCH": {
-                    double power = (double) (Double) effectMap.getOrDefault("power", 1.0);
+                    double power = getDoubleFromMap(effectMap, "power", 1.0);
                     LivingEntity launchTarget = targetType.equals("TARGET") && targetEntity != null ? targetEntity : player;
                     Vector direction = launchTarget.getLocation().getDirection().setY(0).normalize();
                     Vector velocity = direction.multiply(power).setY(power * 0.5);
@@ -138,8 +138,8 @@ public class SkillManager {
                 case "POTION": {
                     PotionEffectType potType = PotionEffectType.getByName(((String) effectMap.get("potion_type")).toUpperCase());
                     if (potType != null) {
-                        int duration = (int) (Integer) effectMap.getOrDefault("duration", 10) * 20;
-                        int amplifier = (int) (Integer) effectMap.getOrDefault("amplifier", 0);
+                        int duration = getIntFromMap(effectMap, "duration", 10) * 20;
+                        int amplifier = getIntFromMap(effectMap, "amplifier", 0);
                         LivingEntity potionTarget = targetType.equals("TARGET") && targetEntity != null ? targetEntity : player;
                         potionTarget.addPotionEffect(new PotionEffect(potType, duration, amplifier));
                     }
@@ -148,8 +148,7 @@ public class SkillManager {
             }
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED + "Lá»--i cáº¥u hÃ¬nh ká»¹ nÄƒng: " + e.getMessage());
-            // Để debug tốt hơn, bạn có thể thêm dòng này để in lỗi ra console của server
-            // e.printStackTrace();
+            e.printStackTrace(); // Rất hữu ích để xem lỗi chi tiết trong console server
         }
     }
 
@@ -172,5 +171,32 @@ public class SkillManager {
         String msg = plugin.getConfig().getString(path, "&cKhÃ'ng tÃ¬m tháº¥y tin nháº¯n: " + path);
         String prefix = plugin.getConfig().getString("messages.prefix", "");
         return ChatColor.translateAlternateColorCodes('&', prefix + msg);
+    }
+    
+    // ===== CÁC HÀM TRỢ GIÚP MỚI ĐƯỢC THÊM VÀO =====
+    private int getIntFromMap(Map<?, ?> map, String key, int defaultValue) {
+        Object value = map.get(key);
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException ignored) {}
+        }
+        return defaultValue;
+    }
+
+    private double getDoubleFromMap(Map<?, ?> map, String key, double defaultValue) {
+        Object value = map.get(key);
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Double.parseDouble((String) value);
+            } catch (NumberFormatException ignored) {}
+        }
+        return defaultValue;
     }
 }
