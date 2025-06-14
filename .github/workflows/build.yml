@@ -1,3 +1,4 @@
+# Tên của quy trình build
 name: Build SkillAnime Plugin
 
 on:
@@ -11,12 +12,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      # --- BẮT ĐẦU THAY ĐỔI ---
+      - name: Set up JDK 21 # Đổi tên cho dễ đọc
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '21' # Thay đổi quan trọng nhất: từ '17' thành '21'
           distribution: 'temurin'
           cache: 'maven'
+      # --- KẾT THÚC THAY ĐỔI ---
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
@@ -24,5 +27,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SkillAnime-Build
+          name: SkillAnime-Build-Java21 # Đổi tên để phân biệt
           path: target/*.jar

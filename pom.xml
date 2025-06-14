@@ -26,18 +26,19 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21-R0.1-SNAPSHOT</version>
+            <version>1.21-R0.1-SNAPSHOT</version> <!-- Phiên bản này yêu cầu Java 21, rất tốt! -->
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
+    <!-- ===== PHẦN ĐƯỢC CHỈNH SỬA BÊN DƯỚI ===== -->
     <build>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version> <!-- ĐÃ CẬP NHẬT: Phiên bản mới nhất, hỗ trợ đầy đủ Java 21 -->
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -46,7 +47,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.2</version> <!-- ĐÃ CẬP NHẬT: Nâng cấp để tương thích tốt hơn -->
             </plugin>
         </plugins>
     </build>
