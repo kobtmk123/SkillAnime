@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors; // <<< THÊM DÒNG IMPORT NÀY
 
 public class SkillManager {
 
@@ -151,13 +152,13 @@ public class SkillManager {
         }
     }
 
-    // ===== HÀM ĐÃ ĐƯỢC SỬA LẠI ĐỂ GIẢI QUYẾT LỖI GỐC =====
+    // ===== HÀM ĐÃ ĐƯỢC SỬA LỖI .toList() =====
     private LivingEntity getTargetEntity(Player player, int range) {
         List<LivingEntity> nearbyEntities = player.getNearbyEntities(range, range, range).stream()
                 .filter(entity -> entity instanceof LivingEntity)
                 .map(entity -> (LivingEntity) entity)
                 .filter(player::hasLineOfSight)
-                .toList();
+                .collect(Collectors.toList()); // <<< THAY ĐỔI QUAN TRỌNG NHẤT LÀ Ở ĐÂY
 
         LivingEntity target = null;
         double minAngle = Double.MAX_VALUE;
@@ -180,7 +181,6 @@ public class SkillManager {
         return ChatColor.translateAlternateColorCodes('&', prefix + msg);
     }
     
-    // ===== CÁC HÀM TRỢ GIÚP ĐỂ LẤY DỮ LIỆU AN TOÀN =====
     private int getIntFromMap(Map<?, ?> map, String key, int defaultValue) {
         Object value = map.get(key);
         if (value instanceof Number) {
