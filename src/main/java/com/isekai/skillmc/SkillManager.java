@@ -88,7 +88,6 @@ public class SkillManager {
         }
     }
 
-    // ===== HÀM ĐÃ ĐƯỢC SỬA LẠI THEO PHƯƠNG PHÁP MỚI AN TOÀN HƠN =====
     private void executeSingleEffect(Player player, LivingEntity targetEntity, Map<?, ?> effectMap) {
         String type = (String) effectMap.get("type");
         if (type == null) return;
@@ -147,33 +146,41 @@ public class SkillManager {
                 }
             }
         } catch (Exception e) {
-            player.sendMessage(ChatColor.RED + "Lá»--i cáº¥u hÃ¬nh ká»¹ nÄƒng: " + e.getMessage());
-            e.printStackTrace(); // Rất hữu ích để xem lỗi chi tiết trong console server
+            player.sendMessage(ChatColor.RED + "Lỗi cấu hình kỹ năng: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+    // ===== HÀM ĐÃ ĐƯỢC SỬA LẠI ĐỂ GIẢI QUYẾT LỖI GỐC =====
     private LivingEntity getTargetEntity(Player player, int range) {
-        return player.getNearbyEntities(range, range, range).stream()
+        List<LivingEntity> nearbyEntities = player.getNearbyEntities(range, range, range).stream()
                 .filter(entity -> entity instanceof LivingEntity)
                 .map(entity -> (LivingEntity) entity)
                 .filter(player::hasLineOfSight)
-                .min((e1, e2) -> {
-                    Vector toE1 = e1.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
-                    Vector toE2 = e2.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
-                    return Double.compare(
-                            toE1.angle(player.getEyeLocation().getDirection()),
-                            toE2.angle(player.getEyeLocation().getDirection())
-                    );
-                }).orElse(null);
+                .toList();
+
+        LivingEntity target = null;
+        double minAngle = Double.MAX_VALUE;
+
+        for (LivingEntity entity : nearbyEntities) {
+            Vector toEntity = entity.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
+            double angle = toEntity.angle(player.getEyeLocation().getDirection());
+
+            if (angle < minAngle) {
+                minAngle = angle;
+                target = entity;
+            }
+        }
+        return target;
     }
 
     public String formatMessage(String path) {
-        String msg = plugin.getConfig().getString(path, "&cKhÃ'ng tÃ¬m tháº¥y tin nháº¯n: " + path);
+        String msg = plugin.getConfig().getString(path, "&cKhông tìm thấy tin nhắn: " + path);
         String prefix = plugin.getConfig().getString("messages.prefix", "");
         return ChatColor.translateAlternateColorCodes('&', prefix + msg);
     }
     
-    // ===== CÁC HÀM TRỢ GIÚP MỚI ĐƯỢC THÊM VÀO =====
+    // ===== CÁC HÀM TRỢ GIÚP ĐỂ LẤY DỮ LIỆU AN TOÀN =====
     private int getIntFromMap(Map<?, ?> map, String key, int defaultValue) {
         Object value = map.get(key);
         if (value instanceof Number) {
