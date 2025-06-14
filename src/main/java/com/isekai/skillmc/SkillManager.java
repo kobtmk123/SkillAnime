@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors; // <<< THÊM DÒNG IMPORT NÀY
+import java.util.stream.Collectors;
 
 public class SkillManager {
 
@@ -49,6 +49,7 @@ public class SkillManager {
         return skills;
     }
 
+    @SuppressWarnings("unchecked") // Bỏ qua cảnh báo về ép kiểu không an toàn, vì chúng ta biết nó đúng
     public void executeSkill(Player player, ConfigurationSection skill) {
         String skillName = skill.getString("name", "Ká»¹ nÄƒng khÃ'ng tÃªn");
 
@@ -83,13 +84,18 @@ public class SkillManager {
         }
 
         LivingEntity targetEntity = getTargetEntity(player, 30);
-        List<Map<?, ?>> effects = skill.getMapList("effects");
-        for (Map<?, ?> effectMap : effects) {
+
+        // <<< THAY ĐỔI 1: KHAI BÁO KIỂU DỮ LIỆU CỤ THỂ HƠN >>>
+        List<Map<String, Object>> effects = (List<Map<String, Object>>) (List<?>) skill.getMapList("effects");
+
+        // <<< THAY ĐỔI 2: CẬP NHẬT VÒNG LẶP FOR >>>
+        for (Map<String, Object> effectMap : effects) {
             executeSingleEffect(player, targetEntity, effectMap);
         }
     }
 
-    private void executeSingleEffect(Player player, LivingEntity targetEntity, Map<?, ?> effectMap) {
+    // <<< THAY ĐỔI 3: CẬP NHẬT CHỮ KÝ CỦA HÀM >>>
+    private void executeSingleEffect(Player player, LivingEntity targetEntity, Map<String, Object> effectMap) {
         String type = (String) effectMap.get("type");
         if (type == null) return;
 
@@ -152,13 +158,12 @@ public class SkillManager {
         }
     }
 
-    // ===== HÀM ĐÃ ĐƯỢC SỬA LỖI .toList() =====
     private LivingEntity getTargetEntity(Player player, int range) {
         List<LivingEntity> nearbyEntities = player.getNearbyEntities(range, range, range).stream()
                 .filter(entity -> entity instanceof LivingEntity)
                 .map(entity -> (LivingEntity) entity)
                 .filter(player::hasLineOfSight)
-                .collect(Collectors.toList()); // <<< THAY ĐỔI QUAN TRỌNG NHẤT LÀ Ở ĐÂY
+                .collect(Collectors.toList());
 
         LivingEntity target = null;
         double minAngle = Double.MAX_VALUE;
@@ -180,8 +185,8 @@ public class SkillManager {
         String prefix = plugin.getConfig().getString("messages.prefix", "");
         return ChatColor.translateAlternateColorCodes('&', prefix + msg);
     }
-    
-    private int getIntFromMap(Map<?, ?> map, String key, int defaultValue) {
+
+    private int getIntFromMap(Map<String, Object> map, String key, int defaultValue) {
         Object value = map.get(key);
         if (value instanceof Number) {
             return ((Number) value).intValue();
@@ -194,7 +199,7 @@ public class SkillManager {
         return defaultValue;
     }
 
-    private double getDoubleFromMap(Map<?, ?> map, String key, double defaultValue) {
+    private double getDoubleFromMap(Map<String, Object> map, String key, double defaultValue) {
         Object value = map.get(key);
         if (value instanceof Number) {
             return ((Number) value).doubleValue();
